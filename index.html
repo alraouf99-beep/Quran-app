@@ -2,71 +2,146 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>محاكي الميراث القرآني - المنطق الكيرالي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاكي الميراث القرآني - مدرسة الدوامة</title>
     <style>
-        :root { --primary: #004d40; --gold: #c09b52; --bg: #f8faf9; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); padding: 20px; text-align: center; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 8px solid var(--primary); }
-        .logic-note { background: #fffde7; color: #5d4037; padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 20px; border: 1px solid #ffe082; }
-        button { width: 100%; background: var(--primary); color: white; padding: 15px; border: none; border-radius: 12px; font-size: 18px; cursor: pointer; margin-top: 15px; }
-        .res-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        :root { --p: #004d40; --g: #c09b52; --bg: #f8faf9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 15px; text-align: center; }
+        .vortex-container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 8px solid var(--p); }
+        .logic-box { background: #e0f2f1; padding: 10px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; font-weight: bold; }
+        .input-group { text-align: right; margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--p); }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        .flex { display: flex; gap: 10px; }
+        button { width: 100%; background: var(--p); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        #result { margin-top: 25px; padding: 20px; border: 2px solid var(--g); border-radius: 15px; display: none; background: #fff; text-align: right; }
+        .res-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
         .val { font-weight: bold; color: #2e7d32; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="vortex-container">
     <h2>محاكي الميراث القرآني</h2>
-    <div class="logic-note">
-        * يعتمد البرنامج منطق "امرؤ" للعزب (آية 176) و"رجل" للمتزوج (آية 12).
+    <div class="logic-box">منطق الكلالة: (رجل = متزوج) | (امرؤ = عزب)</div>
+
+    <div class="input-group">
+        <label>إجمالي مبلغ التركة:</label>
+        <input type="number" id="estate" placeholder="مثلاً: 800000">
     </div>
 
-    <input type="number" id="estate" placeholder="إجمالي التركة" style="width:90%; padding:10px; margin-bottom:15px; border-radius:8px; border:1px solid #ccc;">
-
-    <div style="text-align:right; margin-bottom:15px;">
-        <label>حالة الشريك (الزوجية):</label>
-        <select id="spouse" style="width:100%; padding:10px; border-radius:8px;">
+    <div class="input-group">
+        <label>الحالة الزوجية للمتوفى:</label>
+        <select id="spouse">
             <option value="none">عزب (امرؤ/امرأة - آية 176)</option>
             <option value="wife">متزوج (رجل ترك زوجة - آية 12)</option>
             <option value="husband">متزوجة (امرأة تركت زوجاً - آية 12)</option>
         </select>
     </div>
 
-    <div style="display:flex; gap:10px; margin-bottom:15px;">
-        <input type="number" id="sons" placeholder="عدد الذكور" style="flex:1; padding:10px;">
-        <input type="number" id="daughters" placeholder="عدد الإناث" style="flex:1; padding:10px;">
+    <div class="input-group">
+        <label>الأبناء (الولد يشمل الذكر والأنثى):</label>
+        <div class="flex">
+            <input type="number" id="sons" placeholder="ذكور" value="0">
+            <input type="number" id="daughters" placeholder="إناث" value="0">
+        </div>
     </div>
 
-    <button onclick="calculateVortex()">تشغيل الدوامة الحسابية</button>
-    <div id="result" style="margin-top:20px; display:none; text-align:right;"></div>
+    <div class="input-group">
+        <label>الأبوان:</label>
+        <div class="flex">
+            <select id="father"><option value="1">الأب حي</option><option value="0">متوفى</option></select>
+            <select id="mother"><option value="1">الأم حية</option><option value="0">متوفاة</option></select>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label>الإخوة (في حالة الكلالة):</label>
+        <div class="flex">
+            <input type="number" id="mS" placeholder="ذكور" value="0">
+            <input type="number" id="fS" placeholder="إناث" value="0">
+        </div>
+    </div>
+
+    <button onclick="runVortex()">احسب بالمنطق الكيرالي</button>
+
+    <div id="result"></div>
 </div>
 
 <script>
-function calculateVortex() {
+/* وثيقة المنطق:
+   1. الكلالة (آية 12): متزوج (رجل/امرأة) -> إخوة لأم -> قسمة بالتساوي.
+   2. الكلالة (آية 176): عزب (امرؤ/امرأة) -> إخوة أشقاء/لأب -> قسمة 2:1.
+   3. الولد (آية 11): يشمل الذكر والأنثى.
+*/
+
+function runVortex() {
     const estate = parseFloat(document.getElementById('estate').value);
-    const spouse = document.getElementById('spouse').value;
+    if (!estate) return alert("يرجى إدخال التركة");
+
     const nS = parseInt(document.getElementById('sons').value) || 0;
     const nD = parseInt(document.getElementById('daughters').value) || 0;
-    const hasWalad = (nS + nD) > 0;
+    const hasW = (nS + nD) > 0; // الولد يشمل الذكر والأنثى
+    const sp = document.getElementById('spouse').value;
+    const hasF = document.getElementById('father').value === "1";
+    const hasM = document.getElementById('mother').value === "1";
+    const mSib = parseInt(document.getElementById('mS').value) || 0;
+    const fSib = parseInt(document.getElementById('fS').value) || 0;
 
-    let html = "<h4>نتائج التوزيع:</h4>";
-    let remaining = estate;
+    let res = [];
+    let rem = estate;
 
-    // تطبيق منطق الثمن القطعي للزوجة
-    if (spouse !== 'none') {
-        let r = (spouse === 'wife') ? (hasWalad ? 1/8 : 1/4) : (hasWalad ? 1/4 : 1/2);
-        let sAmt = estate * r;
-        remaining -= sAmt;
-        html += `<div class="res-row"><b>الشريك (ثابت):</b><span class="val">${sAmt.toLocaleString()}</span></div>`;
+    // 1. حصة الشريك (آية 12) - قطعية لا تتدور
+    if (sp !== 'none') {
+        let r = (sp === 'wife') ? (hasW ? 1/8 : 1/4) : (hasW ? 1/4 : 1/2);
+        let amt = estate * r;
+        rem -= amt;
+        res.push({ name: (sp === 'wife' ? "الزوجة" : "الزوج"), amt: amt });
     }
 
-    // هنا يتم تطبيق منطق الكلالة المكتشف بناءً على نوع الشريك
-    // إذا كان spouse === 'none' يطبق آية 176 (تفاضل 2:1)
-    // إذا كان spouse !== 'none' يطبق آية 12 (تساوي 1:1)
+    // 2. تجهيز الدوامة لباقي الورثة
+    let pool = [];
+    if (hasM) pool.push({ name: "الأم", r: hasW ? 1/6 : 1/3 });
+    if (hasF) pool.push({ name: "الأب", r: hasW ? 1/6 : 0.4 });
     
-    // (تتمة منطق الدوامة كما في الكود السابق...)
-    
-    document.getElementById('result').innerHTML = html + "<p style='font-size:12px; color:gray;'>تم الحساب بناءً على منطق التمييز بين 'رجل' و 'امرؤ'.</p>";
+    if (hasW) {
+        pool.push({ name: "الأولاد", r: 0.65, isG: true, m: nS, f: nD, mode: '2:1' });
+    }
+
+    // 3. الكلالة (اكتشاف المستخدم)
+    if (!hasW && !hasF && (mSib + fSib) > 0) {
+        if (sp !== 'none') {
+            // آية 12: رجل/امرأة (متزوج) -> تساوي
+            let r12 = (mSib + fSib === 1) ? 1/6 : 1/3;
+            pool.push({ name: "الإخوة (آية 12 - بالتساوي)", r: r12, isG: true, m: mSib, f: fSib, mode: '1:1' });
+        } else {
+            // آية 176: امرؤ/امرأة (عزب) -> تفاضل
+            let r176 = (mSib === 0 && fSib === 1) ? 1/2 : (mSib === 0 && fSib >= 2) ? 2/3 : 0.7;
+            pool.push({ name: "الإخوة (آية 176 - للذكر ضعف الأنثى)", r: r176, isG: true, m: mSib, f: fSib, mode: '2:1' });
+        }
+    }
+
+    // 4. تدوير المتبقي
+    let totalR = pool.reduce((s, x) => s + x.r, 0);
+    pool.forEach(x => {
+        let amt = (x.r / totalR) * rem;
+        if (x.isG) {
+            let div = (x.mode === '2:1') ? (x.m * 2 + x.f) : (x.m + x.f);
+            let unit = amt / div;
+            res.push({ name: x.name, amt: amt, subM: x.m > 0 ? (x.mode === '2:1' ? unit*2 : unit) : 0, subF: x.f > 0 ? unit : 0 });
+        } else {
+            res.push({ name: x.name, amt: amt });
+        }
+    });
+
+    // العرض
+    let html = "<h4>التوزيع النهائي للتركة:</h4>";
+    res.forEach(item => {
+        html += `<div class="res-line"><b>${item.name}:</b><span class="val">${item.amt.toLocaleString()}</span></div>`;
+        if (item.subM) html += `<div class="res-line" style="font-size:12px;"><span>- حصة الذكر:</span><span>${item.subM.toLocaleString()}</span></div>`;
+        if (item.subF) html += `<div class="res-line" style="font-size:12px;"><span>- حصة الأنثى:</span><span>${item.subF.toLocaleString()}</span></div>`;
+    });
+    document.getElementById('result').innerHTML = html;
     document.getElementById('result').style.display = 'block';
 }
 </script>
