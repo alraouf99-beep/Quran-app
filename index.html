@@ -32,7 +32,7 @@
 <div class="container">
     <h1>محاكي الميراث القرآني</h1>
     <div class="logic-banner">
-        "الولد" يشمل الذكر والأنثى | نصيب الزوجة الثمن عند وجود ولد
+        "الولد" يشمل الذكر والأنثى | الترتيب: آية 12 ← آية 11 ← آية 176
     </div>
 
     <div class="input-group">
@@ -110,13 +110,12 @@
         const mSibs = parseInt(document.getElementById('mSibs').value) || 0;
         const fSibs = parseInt(document.getElementById('fSibs').value) || 0;
 
-        // تعديل الجوهر: الولد يشمل الذكر والأنثى [cite: 2026-01-28]
         const hasChildren = (nSons + nDaughters) > 0;
         const isKalala = !hasChildren && !hasFather;
 
         let tempShares = [];
 
-        // 1. المرحلة الأولى: الآية 12 (الزوجين) - تعديل نصيب الزوجة للثمن عند وجود أي ولد
+        // --- تعديل نصيب الزوجة للثمن هنا ---
         if (spouse === 'wife') {
             let r = hasChildren ? 1/8 : 1/4;
             tempShares.push({ name: "الزوجة", r: r });
@@ -124,20 +123,18 @@
             let r = hasChildren ? 1/4 : 1/2;
             tempShares.push({ name: "الزوج", r: r });
         }
+        // ---------------------------------
 
-        // 2. المرحلة الثانية: الآية 11 (الأبوين)
         if (hasMother) tempShares.push({ name: "الأم", r: hasChildren ? 1/6 : 1/3 });
         if (hasFather) {
             if (hasChildren) tempShares.push({ name: "الأب", r: 1/6 });
-            else if (!isKalala) tempShares.push({ name: "الأب", r: 0.5 }); 
+            else if (!isKalala) tempShares.push({ name: "الأب", r: 0.5 });
         }
 
-        // 3. المرحلة الثالثة: الآية 11 (الأولاد)
         if (hasChildren) {
             tempShares.push({ name: "الأولاد", r: 0.6, isKids: true, m: nSons, f: nDaughters });
         }
 
-        // 4. المرحلة الرابعة: الآية 176 (الكلالة)
         if (isKalala && (mSibs + fSibs > 0)) {
             let r176 = (mSibs > 0 || fSibs >= 2) ? 2/3 : 1/2;
             tempShares.push({ name: "الإخوة", r: r176, isSibs: true, m: mSibs, f: fSibs });
@@ -148,7 +145,6 @@
 
         tempShares.forEach(h => {
             let finalAmt = (h.r / totalR) * estate;
-            
             if (h.isKids || h.isSibs) {
                 let divisor = (h.m * 2) + h.f;
                 let unit = finalAmt / divisor;
@@ -165,6 +161,5 @@
         resBox.style.display = 'block';
     }
 </script>
-
 </body>
 </html>
