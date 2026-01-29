@@ -3,165 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكي الميراث القرآني الشامل</title>
+    <title>محاكي الميراث القرآني</title>
     <style>
-        :root { --primary: #004d40; --gold: #c09b52; --light-bg: #f9fbf9; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; padding: 15px; text-align: center; }
-        .app-card { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 10px solid var(--primary); }
+        :root { --primary: #004d40; --gold: #c09b52; --light: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--light); padding: 10px; text-align: center; }
+        .container { max-width: 600px; margin: 20px auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 10px solid var(--primary); }
         h1 { color: var(--primary); font-size: 24px; margin-bottom: 5px; }
-        .logic-banner { background: #e8f5e9; color: #2e7d32; padding: 12px; border-radius: 10px; font-size: 14px; margin-bottom: 25px; font-weight: bold; border: 1px solid #c8e6c9; }
-        .section-title { text-align: right; font-weight: bold; color: var(--gold); margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .input-group { margin-bottom: 20px; text-align: right; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; }
-        input, select { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px; font-size: 16px; transition: 0.3s; box-sizing: border-box; }
-        input:focus { border-color: var(--primary); outline: none; }
-        .flex-row { display: flex; gap: 15px; margin-bottom: 15px; }
-        .flex-item { flex: 1; text-align: right; }
-        button { width: 100%; background: var(--primary); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        button:hover { background: #00695c; transform: translateY(-2px); }
-        #resultArea { margin-top: 30px; padding: 20px; border-radius: 15px; display: none; background: var(--light-bg); border: 2px solid var(--gold); text-align: right; }
-        .res-line { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e0e0e0; font-size: 16px; }
-        .res-line:last-child { border-bottom: none; }
-        .res-label { color: #555; }
-        .res-value { font-weight: bold; color: var(--primary); }
-        .highlight-box { background: #fff3e0; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 14px; color: #e65100; }
+        .rule-badge { background: #e8f5e9; color: #2e7d32; padding: 10px; border-radius: 10px; font-size: 14px; margin-bottom: 20px; font-weight: bold; border: 1px solid #c8e6c9; }
+        .section-title { text-align: right; font-weight: bold; color: var(--gold); margin: 15px 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .input-group { margin-bottom: 15px; text-align: right; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #444; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
+        .flex { display: flex; gap: 10px; }
+        button { width: 100%; background: var(--primary); color: white; padding: 15px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        #result { margin-top: 25px; padding: 20px; border-radius: 12px; display: none; background: white; border: 2px solid var(--gold); text-align: right; }
+        .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .val { font-weight: bold; color: #2e7d32; }
     </style>
 </head>
 <body>
 
-<div class="app-card">
-    <h1>محاكي الميراث القرآني</h1>
-    <div class="logic-banner">قاعدة: "الولد" تشمل الذكر والأنثى | إعادة تدوير الحصص</div>
+<div class="container">
+    <h1>الميراث القرآني (11-12-176)</h1>
+    <div class="rule-badge">المنطق: الولد يشمل الذكر والأنثى | إعادة تدوير الحصص</div>
 
     <div class="input-group">
         <label>إجمالي مبلغ التركة:</label>
-        <input type="number" id="totalEstate" placeholder="أدخل المبلغ هنا">
+        <input type="number" id="estate" placeholder="أدخل المبلغ">
     </div>
 
     <div class="section-title">الأولاد (الآية 11)</div>
-    <div class="flex-row">
-        <div class="flex-item">
-            <label>عدد الذكور:</label>
-            <input type="number" id="sonsQty" value="0" min="0">
+    <div class="flex">
+        <div class="input-group" style="flex:1">
+            <label>عدد الذكور (أبناء):</label>
+            <input type="number" id="sons" value="0" min="0">
         </div>
-        <div class="flex-item">
-            <label>عدد الإناث:</label>
-            <input type="number" id="daughtersQty" value="0" min="0">
+        <div class="input-group" style="flex:1">
+            <label>عدد الإناث (بنات):</label>
+            <input type="number" id="daughters" value="0" min="0">
         </div>
     </div>
 
     <div class="section-title">الأبوين والشريك (الآية 11-12)</div>
-    <div class="flex-row">
-        <div class="flex-item">
-            <label>الشريك الوارث:</label>
-            <select id="spouseInput">
-                <option value="none">لا يوجد</option>
-                <option value="wife">الزوجة (المتوفى زوج)</option>
-                <option value="husband">الزوج (المتوفاة زوجة)</option>
-            </select>
-        </div>
-        <div class="flex-item">
+    <div class="flex">
+        <div class="input-group" style="flex:1">
             <label>الأبوان:</label>
-            <select id="parentsInput">
+            <select id="parents">
                 <option value="both">الأب والأم</option>
                 <option value="father">الأب فقط</option>
                 <option value="mother">الأم فقط</option>
-                <option value="none">متوفيان (حالة كلالة)</option>
+                <option value="none">متوفيان (كلالة)</option>
+            </select>
+        </div>
+        <div class="input-group" style="flex:1">
+            <label>الزوج/الزوجة:</label>
+            <select id="spouse">
+                <option value="none">لا يوجد</option>
+                <option value="wife">زوجة</option>
+                <option value="husband">زوج</option>
             </select>
         </div>
     </div>
 
     <div id="kalalaSection" style="display:none;">
         <div class="section-title">الإخوة - حالة كلالة (الآية 176)</div>
-        <div class="flex-row">
-            <div class="flex-item">
+        <div class="flex">
+            <div class="input-group" style="flex:1">
                 <label>إخوة (ذكور):</label>
-                <input type="number" id="maleSibs" value="0" min="0">
+                <input type="number" id="mSib" value="0" min="0">
             </div>
-            <div class="flex-item">
+            <div class="input-group" style="flex:1">
                 <label>أخوات (إناث):</label>
-                <input type="number" id="femaleSibs" value="0" min="0">
+                <input type="number" id="fSib" value="0" min="0">
             </div>
         </div>
     </div>
 
-    <button onclick="processInheritance()">احسب الميراث وإعادة التدوير</button>
+    <button onclick="calculate()">احسب الميراث وإعادة التدوير</button>
 
-    <div id="resultArea"></div>
+    <div id="result"></div>
 </div>
 
 <script>
-    // إظهار قسم الكلالة فقط عند غياب الوالدين والأولاد
+    // مراقبة المدخلات لإظهار قسم الكلالة تلقائياً
     document.addEventListener('input', function() {
-        const hasKids = (parseInt(document.getElementById('sonsQty').value) || 0) + (parseInt(document.getElementById('daughtersQty').value) || 0) > 0;
-        const noParents = document.getElementById('parentsInput').value === 'none';
-        document.getElementById('kalalaSection').style.display = (!hasKids && noParents) ? 'block' : 'none';
+        const hasChildren = (parseInt(document.getElementById('sons').value) || 0) + (parseInt(document.getElementById('daughters').value) || 0) > 0;
+        const noParents = document.getElementById('parents').value === 'none';
+        document.getElementById('kalalaSection').style.display = (!hasChildren && noParents) ? 'block' : 'none';
     });
 
-    function processInheritance() {
-        const estate = parseFloat(document.getElementById('totalEstate').value);
-        const sCount = parseInt(document.getElementById('sonsQty').value) || 0;
-        const dCount = parseInt(document.getElementById('daughtersQty').value) || 0;
-        const spouse = document.getElementById('spouseInput').value;
-        const parents = document.getElementById('parentsInput').value;
-        const mSibs = parseInt(document.getElementById('maleSibs').value) || 0;
-        const fSibs = parseInt(document.getElementById('femaleSibs').value) || 0;
+    function calculate() {
+        const estate = parseFloat(document.getElementById('estate').value);
+        const nSons = parseInt(document.getElementById('sons').value) || 0;
+        const nDaughters = parseInt(document.getElementById('daughters').value) || 0;
+        const nMSib = parseInt(document.getElementById('mSib').value) || 0;
+        const nFSib = parseInt(document.getElementById('fSib').value) || 0;
+        const spouse = document.getElementById('spouse').value;
+        const parents = document.getElementById('parents').value;
 
-        if (!estate || estate <= 0) { alert("أدخل مبلغ التركة"); return; }
+        if (!estate) return alert("يرجى إدخال مبلغ التركة");
 
-        const hasChild = (sCount + dCount) > 0;
-        const isKalala = !hasChild && (parents === 'none');
+        const hasChildren = (nSons + nDaughters) > 0;
+        const isKalala = !hasChildren && (parents === 'none');
 
         let heirs = [];
 
-        // 1. الشريك (آية 12)
-        if (spouse === 'wife') heirs.push({ id: 'sp', name: "الزوجة", r: hasChild ? 1/8 : 1/4 });
-        else if (spouse === 'husband') heirs.push({ id: 'sp', name: "الزوج", r: hasChild ? 1/4 : 1/2 });
+        // 1. الزوج/الزوجة (الآية 12)
+        if (spouse === 'wife') heirs.push({ name: "الزوجة", r: hasChildren ? 1/8 : 1/4 });
+        else if (spouse === 'husband') heirs.push({ name: "الزوج", r: hasChildren ? 1/4 : 1/2 });
 
-        // 2. الأم (آية 11)
-        if (parents === 'both' || parents === 'mother') heirs.push({ id: 'mo', name: "الأم", r: hasChild ? 1/6 : 1/3 });
+        // 2. الأم (الآية 11)
+        if (parents === 'both' || parents === 'mother') heirs.push({ name: "الأم", r: hasChildren ? 1/6 : 1/3 });
 
-        // 3. الأب (آية 11)
+        // 3. الأب (الآية 11)
         if (parents === 'both' || parents === 'father') {
-            if (hasChild) heirs.push({ id: 'fa', name: "الأب", r: 1/6 });
-            else if (!isKalala) heirs.push({ id: 'fa', name: "الأب", r: 0.5 }); // تعصيب في حال غياب الولد
+            if (hasChildren) heirs.push({ name: "الأب", r: 1/6 });
+            else if (!isKalala) heirs.push({ name: "الأب", r: 0.4 }); // تعصيب افتراضي
         }
 
-        // 4. الأولاد (آية 11)
-        if (hasChild) heirs.push({ id: 'kids', name: "الأولاد", r: 0.6, isKids: true });
+        // 4. الأولاد (الآية 11) - كتلة للتدوير
+        if (hasChildren) heirs.push({ name: "الأولاد", r: 0.6, isKids: true });
 
-        // 5. الإخوة (آية 176 - كلالة)
-        if (isKalala && (mSibs + fSibs > 0)) {
-            let ratio = (mSibs > 0 || fSibs >= 2) ? 2/3 : (fSibs === 1 ? 1/2 : 0);
-            if (ratio > 0) heirs.push({ id: 'sibs', name: "الإخوة", r: ratio, isSibs: true });
+        // 5. الإخوة (الآية 176 - كلالة)
+        if (isKalala && (nMSib + nFSib > 0)) {
+            let ratio = (nMSib > 0 || nFSib >= 2) ? 2/3 : (nFSib === 1 ? 1/2 : 0);
+            if (ratio > 0) heirs.push({ name: "الإخوة", r: ratio, isSibs: true });
         }
 
         // إعادة التدوير (النسبة والتناسب)
-        let totalR = heirs.reduce((acc, h) => acc + h.r, 0);
-        let resHtml = "<h3>نتائج توزيع التركة بالكامل:</h3>";
+        let totalR = heirs.reduce((sum, h) => sum + h.r, 0);
+        let html = "<h3>نتائج التوزيع (إعادة تدوير):</h3>";
 
         heirs.forEach(h => {
-            let finalAmt = (h.r / totalR) * estate;
+            let amount = (h.r / totalR) * estate;
             if (h.isKids) {
-                let parts = (sCount * 2) + dCount;
-                let unit = finalAmt / parts;
-                resHtml += `<div class="res-line"><span class="res-label">نصيب الأبناء والبنات:</span><span class="res-value">${finalAmt.toLocaleString()}</span></div>`;
-                if (sCount > 0) resHtml += `<div class="res-line" style="font-size:14px;"><span>- نصيب الابن الواحد:</span><span>${(unit*2).toLocaleString()}</span></div>`;
-                if (dCount > 0) resHtml += `<div class="res-line" style="font-size:14px;"><span>- نصيب البنت الواحدة:</span><span>${unit.toLocaleString()}</span></div>`;
+                let parts = (nSons * 2) + nDaughters;
+                let unit = amount / parts;
+                html += `<div class="row"><span>إجمالي نصيب الأولاد:</span><span class="val">${amount.toLocaleString()}</span></div>`;
+                if (nSons > 0) html += `<div class="row" style="font-size:14px;"><span>- لكل ابن:</span><span>${(unit*2).toLocaleString()}</span></div>`;
+                if (nDaughters > 0) html += `<div class="row" style="font-size:14px;"><span>- لكل بنت:</span><span>${unit.toLocaleString()}</span></div>`;
             } else if (h.isSibs) {
-                let parts = (mSibs * 2) + fSibs;
-                let unit = finalAmt / parts;
-                resHtml += `<div class="res-line"><span class="res-label">نصيب الإخوة (آية 176):</span><span class="res-value">${finalAmt.toLocaleString()}</span></div>`;
-                if (mSibs > 0) resHtml += `<div class="res-line" style="font-size:14px;"><span>- نصيب الأخ:</span><span>${(unit*2).toLocaleString()}</span></div>`;
-                if (fSibs > 0) resHtml += `<div class="res-line" style="font-size:14px;"><span>- نصيب الأخت:</span><span>${unit.toLocaleString()}</span></div>`;
+                let parts = (nMSib * 2) + nFSib;
+                let unit = amount / parts;
+                html += `<div class="row"><span>إجمالي نصيب الإخوة (آية 176):</span><span class="val">${amount.toLocaleString()}</span></div>`;
+                if (nMSib > 0) html += `<div class="row" style="font-size:14px;"><span>- لكل أخ:</span><span>${(unit*2).toLocaleString()}</span></div>`;
+                if (nFSib > 0) html += `<div class="row" style="font-size:14px;"><span>- لكل أخت:</span><span>${unit.toLocaleString()}</span></div>`;
             } else {
-                resHtml += `<div class="res-line"><span class="res-label">${h.name}:</span><span class="res-value">${finalAmt.toLocaleString()}</span></div>`;
+                html += `<div class="row"><span>${h.name}:</span><span class="val">${amount.toLocaleString()}</span></div>`;
             }
         });
 
-        const box = document.getElementById('resultArea');
-        box.innerHTML = resHtml;
-        box.style.display = 'block';
+        document.getElementById('result').innerHTML = html;
+        document.getElementById('result').style.display = 'block';
     }
 </script>
 
