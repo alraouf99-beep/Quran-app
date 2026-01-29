@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكي الميراث القرآني - نسخة الثمن</title>
+    <title>محاكي الميراث القرآني المتكامل</title>
     <style>
         :root { --primary: #004d40; --gold: #c09b52; --bg: #f8faf9; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); padding: 15px; text-align: center; }
@@ -11,35 +11,42 @@
         .logic-banner { background: #e0f2f1; color: #004d40; padding: 12px; border-radius: 12px; font-size: 13px; margin-bottom: 25px; font-weight: bold; border-right: 5px solid var(--primary); }
         .section-title { text-align: right; font-weight: bold; color: var(--gold); margin: 20px 0 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         .input-group { margin-bottom: 18px; text-align: right; }
-        label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; }
-        input, select { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 12px; font-size: 16px; box-sizing: border-box; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; color: #333; }
+        input, select { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 12px; font-size: 16px; box-sizing: border-box; transition: 0.3s; }
+        input:focus { border-color: var(--primary); outline: none; background: #fff; }
+        
         .vortex-flex { display: flex; gap: 15px; justify-content: space-between; }
         .flex-item { flex: 1; text-align: right; }
+        
         button { width: 100%; background: var(--primary); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 19px; cursor: pointer; font-weight: bold; margin-top: 20px; transition: 0.3s; }
         button:hover { background: #00695c; transform: translateY(-2px); }
+        
         #result { margin-top: 30px; padding: 20px; border-radius: 15px; display: none; background: #fff; border: 2px solid var(--gold); text-align: right; }
         .res-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; }
         .val { font-weight: bold; color: #2e7d32; font-size: 18px; }
+        .sub-val { font-size: 14px; color: #666; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>محاكي الميراث القرآني (تعديل نصيب الزوجة)</h1>
-    <div class="logic-banner">تحقق آلي: وجود أي ذكر أو أنثى في خانة الأولاد يقلص نصيب الزوجة للثمن.</div>
+    <h1>محاكي الميراث القرآني</h1>
+    <div class="logic-banner">
+        "الولد" يشمل الذكر والأنثى | نصيب الزوجة الثمن عند وجود ولد
+    </div>
 
     <div class="input-group">
         <label>إجمالي مبلغ التركة:</label>
         <input type="number" id="estate" placeholder="أدخل المبلغ الإجمالي">
     </div>
 
-    <div class="section-title">المتوفى (الآية 12)</div>
+    <div class="section-title">المتوفى والشريك (الآية 12)</div>
     <div class="input-group">
-        <label>المتوفى هو الزوج (الوارثة هي الزوجة):</label>
-        <select id="spouseType">
-            <option value="wife">نعم (الزوجة ترث)</option>
-            <option value="husband">لا (المتوفاة زوجة - الزوج يرث)</option>
-            <option value="none">لا يوجد شريك</option>
+        <label>المتوفى ترك:</label>
+        <select id="spouse">
+            <option value="none">لا يوجد (أعزب/أرمل)</option>
+            <option value="wife">زوجة (المتوفى زوج)</option>
+            <option value="husband">زوج (المتوفاة زوجة)</option>
         </select>
     </div>
 
@@ -47,11 +54,11 @@
     <div class="vortex-flex">
         <div class="flex-item">
             <label>عدد الذكور (يمين):</label>
-            <input type="number" id="sonsCount" value="0" min="0">
+            <input type="number" id="sons" value="0" min="0">
         </div>
         <div class="flex-item">
             <label>عدد الإناث (يسار):</label>
-            <input type="number" id="daughtersCount" value="0" min="0">
+            <input type="number" id="daughters" value="0" min="0">
         </div>
     </div>
 
@@ -59,73 +66,97 @@
     <div class="vortex-flex">
         <div class="flex-item">
             <label>الأب:</label>
-            <select id="fatherExist">
+            <select id="father">
                 <option value="1">حي</option>
                 <option value="0">متوفى</option>
             </select>
         </div>
         <div class="flex-item">
             <label>الأم:</label>
-            <select id="motherExist">
+            <select id="mother">
                 <option value="1">حية</option>
                 <option value="0">متوفاة</option>
             </select>
         </div>
     </div>
 
-    <button onclick="calculateVortex()">احسب الميراث الآن</button>
+    <div class="section-title">إخوة المتوفى (الآية 176)</div>
+    <div class="vortex-flex">
+        <div class="flex-item">
+            <label>عدد الذكور (يمين):</label>
+            <input type="number" id="mSibs" value="0" min="0">
+        </div>
+        <div class="flex-item">
+            <label>عدد الإناث (يسار):</label>
+            <input type="number" id="fSibs" value="0" min="0">
+        </div>
+    </div>
+
+    <button onclick="runVortex()">احسب الميراث وإعادة التدوير</button>
+
     <div id="result"></div>
 </div>
 
 <script>
-    function calculateVortex() {
+    function runVortex() {
         const estate = parseFloat(document.getElementById('estate').value);
-        if (!estate) return alert("أدخل مبلغ التركة");
+        if (!estate) return alert("يرجى إدخال مبلغ التركة");
 
-        const nSons = parseInt(document.getElementById('sonsCount').value) || 0;
-        const nDaughters = parseInt(document.getElementById('daughtersCount').value) || 0;
-        const spouseType = document.getElementById('spouseType').value;
-        const hasFather = document.getElementById('fatherExist').value === "1";
-        const hasMother = document.getElementById('motherExist').value === "1";
+        const nSons = parseInt(document.getElementById('sons').value) || 0;
+        const nDaughters = parseInt(document.getElementById('daughters').value) || 0;
+        const spouse = document.getElementById('spouse').value;
+        const hasFather = document.getElementById('father').value === "1";
+        const hasMother = document.getElementById('mother').value === "1";
+        const mSibs = parseInt(document.getElementById('mSibs').value) || 0;
+        const fSibs = parseInt(document.getElementById('fSibs').value) || 0;
 
-        // القاعدة الجوهرية: الولد (ذكر أو أنثى)
-        const hasWalad = (nSons + nDaughters) > 0;
-        
-        let shares = [];
+        // تعديل الجوهر: الولد يشمل الذكر والأنثى [cite: 2026-01-28]
+        const hasChildren = (nSons + nDaughters) > 0;
+        const isKalala = !hasChildren && !hasFather;
 
-        // 1. الزوجة أو الزوج (آية 12)
-        if (spouseType === 'wife') {
-            // الثمن في حال وجود ولد (ذكر أو أنثى)
-            let ratio = hasWalad ? (1/8) : (1/4);
-            shares.push({ name: "الزوجة", r: ratio, desc: hasWalad ? "الثمن لوجود ولد" : "الربع لعدم وجود ولد" });
-        } else if (spouseType === 'husband') {
-            let ratio = hasWalad ? (1/4) : (1/2);
-            shares.push({ name: "الزوج", r: ratio, desc: hasWalad ? "الربع لوجود ولد" : "النصف لعدم وجود ولد" });
+        let tempShares = [];
+
+        // 1. المرحلة الأولى: الآية 12 (الزوجين) - تعديل نصيب الزوجة للثمن عند وجود أي ولد
+        if (spouse === 'wife') {
+            let r = hasChildren ? 1/8 : 1/4;
+            tempShares.push({ name: "الزوجة", r: r });
+        } else if (spouse === 'husband') {
+            let r = hasChildren ? 1/4 : 1/2;
+            tempShares.push({ name: "الزوج", r: r });
         }
 
-        // 2. الأم والأب (آية 11)
-        if (hasMother) shares.push({ name: "الأم", r: hasWalad ? (1/6) : (1/3) });
-        if (hasFather) shares.push({ name: "الأب", r: hasWalad ? (1/6) : (0.4) }); // 0.4 تعصيب افتراضي للتدوير
-
-        // 3. الأولاد (آية 11)
-        if (hasWalad) {
-            shares.push({ name: "الأولاد", r: 0.6, isKids: true, m: nSons, f: nDaughters });
+        // 2. المرحلة الثانية: الآية 11 (الأبوين)
+        if (hasMother) tempShares.push({ name: "الأم", r: hasChildren ? 1/6 : 1/3 });
+        if (hasFather) {
+            if (hasChildren) tempShares.push({ name: "الأب", r: 1/6 });
+            else if (!isKalala) tempShares.push({ name: "الأب", r: 0.5 }); 
         }
 
-        // إعادة التدوير الكيرالية
-        let totalR = shares.reduce((s, h) => s + h.r, 0);
-        let html = "<h3>النتائج النهائية (إعادة تدوير):</h3>";
+        // 3. المرحلة الثالثة: الآية 11 (الأولاد)
+        if (hasChildren) {
+            tempShares.push({ name: "الأولاد", r: 0.6, isKids: true, m: nSons, f: nDaughters });
+        }
 
-        shares.forEach(h => {
-            let amount = (h.r / totalR) * estate;
-            if (h.isKids) {
+        // 4. المرحلة الرابعة: الآية 176 (الكلالة)
+        if (isKalala && (mSibs + fSibs > 0)) {
+            let r176 = (mSibs > 0 || fSibs >= 2) ? 2/3 : 1/2;
+            tempShares.push({ name: "الإخوة", r: r176, isSibs: true, m: mSibs, f: fSibs });
+        }
+
+        let totalR = tempShares.reduce((s, h) => s + h.r, 0);
+        let html = "<h3>توزيع التركة النهائي:</h3>";
+
+        tempShares.forEach(h => {
+            let finalAmt = (h.r / totalR) * estate;
+            
+            if (h.isKids || h.isSibs) {
                 let divisor = (h.m * 2) + h.f;
-                let unit = amount / divisor;
-                html += `<div class="res-row"><b>إجمالي الأولاد:</b><span class="val">${amount.toLocaleString()}</span></div>`;
-                if (h.m > 0) html += `<div class="res-row"><span>- نصيب الابن:</span><span>${(unit*2).toLocaleString()}</span></div>`;
-                if (h.f > 0) html += `<div class="res-row"><span>- نصيب البنت:</span><span>${unit.toLocaleString()}</span></div>`;
+                let unit = finalAmt / divisor;
+                html += `<div class="res-row"><b>إجمالي ${h.name}:</b><span class="val">${finalAmt.toLocaleString()}</span></div>`;
+                if (h.m > 0) html += `<div class="res-row sub-val"><span>- للذكر الواحد (يمين):</span><span>${(unit*2).toLocaleString()}</span></div>`;
+                if (h.f > 0) html += `<div class="res-row sub-val"><span>- للأنثى الواحدة (يسار):</span><span>${unit.toLocaleString()}</span></div>`;
             } else {
-                html += `<div class="res-row"><b>${h.name} ${h.desc || ''}:</b><span class="val">${amount.toLocaleString()}</span></div>`;
+                html += `<div class="res-row"><b>${h.name}:</b><span class="val">${finalAmt.toLocaleString()}</span></div>`;
             }
         });
 
@@ -134,5 +165,6 @@
         resBox.style.display = 'block';
     }
 </script>
+
 </body>
 </html>
