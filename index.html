@@ -3,31 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكي الميراث القرآني - مدرسة الدوامة</title>
+    <title>محاكي الميراث القرآني - مدرسة الدوامة (مطور)</title>
     <style>
         :root { --p: #004d40; --g: #c09b52; --bg: #f8faf9; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 15px; text-align: center; }
         .vortex-container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 8px solid var(--p); }
-        .logic-box { background: #e0f2f1; padding: 10px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; font-weight: bold; }
+        .logic-box { background: #e0f2f1; padding: 10px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; font-weight: bold; border: 1px dashed var(--p); }
         .input-group { text-align: right; margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--p); }
         input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
         .flex { display: flex; gap: 10px; }
         button { width: 100%; background: var(--p); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #00695c; }
         #result { margin-top: 25px; padding: 20px; border: 2px solid var(--g); border-radius: 15px; display: none; background: #fff; text-align: right; }
         .res-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
         .val { font-weight: bold; color: #2e7d32; }
+        .highlight { color: #d32f2f; font-size: 11px; display: block; }
     </style>
 </head>
 <body>
 
 <div class="vortex-container">
     <h2>محاكي الميراث القرآني</h2>
-    <div class="logic-box">منطق الكلالة: (رجل = متزوج) | (امرؤ = عزب)</div>
+    <div class="logic-box">
+        تحديث: الزوجة من "الأقربون" (يشملها الرد)<br>
+        منطق الكلالة: (رجل = متزوج) | (امرؤ = عزب)
+    </div>
 
     <div class="input-group">
         <label>إجمالي مبلغ التركة:</label>
-        <input type="number" id="estate" placeholder="مثلاً: 800000">
+        <input type="number" id="estate" placeholder="مثلاً: 80000">
     </div>
 
     <div class="input-group">
@@ -63,25 +68,19 @@
         </div>
     </div>
 
-    <button onclick="runVortex()">احسب بالمنطق الكيرالي</button>
+    <button onclick="runVortex()">احسب بالمنطق الكيرالي المعدل</button>
 
     <div id="result"></div>
 </div>
 
 <script>
-/* وثيقة المنطق:
-   1. الكلالة (آية 12): متزوج (رجل/امرأة) -> إخوة لأم -> قسمة بالتساوي.
-   2. الكلالة (آية 176): عزب (امرؤ/امرأة) -> إخوة أشقاء/لأب -> قسمة 2:1.
-   3. الولد (آية 11): يشمل الذكر والأنثى.
-*/
-
 function runVortex() {
     const estate = parseFloat(document.getElementById('estate').value);
     if (!estate) return alert("يرجى إدخال التركة");
 
     const nS = parseInt(document.getElementById('sons').value) || 0;
     const nD = parseInt(document.getElementById('daughters').value) || 0;
-    const hasW = (nS + nD) > 0; // الولد يشمل الذكر والأنثى
+    const hasW = (nS + nD) > 0; 
     const sp = document.getElementById('spouse').value;
     const hasF = document.getElementById('father').value === "1";
     const hasM = document.getElementById('mother').value === "1";
@@ -89,18 +88,15 @@ function runVortex() {
     const fSib = parseInt(document.getElementById('fS').value) || 0;
 
     let res = [];
-    let rem = estate;
+    let pool = [];
 
-    // 1. حصة الشريك (آية 12) - قطعية لا تتدور
+    // 1. إضافة الزوجة/الزوج إلى الـ Pool (لأنهما من الأقربون الآن)
     if (sp !== 'none') {
-        let r = (sp === 'wife') ? (hasW ? 1/8 : 1/4) : (hasW ? 1/4 : 1/2);
-        let amt = estate * r;
-        rem -= amt;
-        res.push({ name: (sp === 'wife' ? "الزوجة" : "الزوج"), amt: amt });
+        let rSpouse = (sp === 'wife') ? (hasW ? 1/8 : 1/4) : (hasW ? 1/4 : 1/2);
+        pool.push({ name: (sp === 'wife' ? "الزوجة" : "الزوج"), r: rSpouse, isSpouse: true });
     }
 
-    // 2. تجهيز الدوامة لباقي الورثة
-    let pool = [];
+    // 2. إضافة باقي الورثة
     if (hasM) pool.push({ name: "الأم", r: hasW ? 1/6 : 1/3 });
     if (hasF) pool.push({ name: "الأب", r: hasW ? 1/6 : 0.4 });
     
@@ -108,39 +104,43 @@ function runVortex() {
         pool.push({ name: "الأولاد", r: 0.65, isG: true, m: nS, f: nD, mode: '2:1' });
     }
 
-    // 3. الكلالة (اكتشاف المستخدم)
+    // 3. منطق الكلالة
     if (!hasW && !hasF && (mSib + fSib) > 0) {
         if (sp !== 'none') {
-            // آية 12: رجل/امرأة (متزوج) -> تساوي
             let r12 = (mSib + fSib === 1) ? 1/6 : 1/3;
-            pool.push({ name: "الإخوة (آية 12 - بالتساوي)", r: r12, isG: true, m: mSib, f: fSib, mode: '1:1' });
+            pool.push({ name: "الإخوة (آية 12)", r: r12, isG: true, m: mSib, f: fSib, mode: '1:1' });
         } else {
-            // آية 176: امرؤ/امرأة (عزب) -> تفاضل
             let r176 = (mSib === 0 && fSib === 1) ? 1/2 : (mSib === 0 && fSib >= 2) ? 2/3 : 0.7;
-            pool.push({ name: "الإخوة (آية 176 - للذكر ضعف الأنثى)", r: r176, isG: true, m: mSib, f: fSib, mode: '2:1' });
+            pool.push({ name: "الإخوة (آية 176)", r: r176, isG: true, m: mSib, f: fSib, mode: '2:1' });
         }
     }
 
-    // 4. تدوير المتبقي
+    // 4. تدوير التركة (الرد الشامل)
+    // هنا يتم تقسيم التركة بالكامل بناءً على نسب الورثة (بما فيهم الزوجة)
     let totalR = pool.reduce((s, x) => s + x.r, 0);
+    
     pool.forEach(x => {
-        let amt = (x.r / totalR) * rem;
+        let amt = (x.r / totalR) * estate; // الرد يتم آلياً هنا لأننا نقسم على المجموع الكلي للنسب
         if (x.isG) {
             let div = (x.mode === '2:1') ? (x.m * 2 + x.f) : (x.m + x.f);
             let unit = amt / div;
             res.push({ name: x.name, amt: amt, subM: x.m > 0 ? (x.mode === '2:1' ? unit*2 : unit) : 0, subF: x.f > 0 ? unit : 0 });
         } else {
-            res.push({ name: x.name, amt: amt });
+            res.push({ name: x.name, amt: amt, isSpouse: x.isSpouse });
         }
     });
 
-    // العرض
-    let html = "<h4>التوزيع النهائي للتركة:</h4>";
+    // عرض النتائج
+    let html = "<h4>التوزيع النهائي (الزوجة مشمولة بالرد):</h4>";
     res.forEach(item => {
-        html += `<div class="res-line"><b>${item.name}:</b><span class="val">${item.amt.toLocaleString()}</span></div>`;
+        html += `<div class="res-line">
+                    <b>${item.name} ${item.isSpouse ? '<span class="highlight">(تم تطبيق الرد)</span>' : ''}:</b>
+                    <span class="val">${item.amt.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                 </div>`;
         if (item.subM) html += `<div class="res-line" style="font-size:12px;"><span>- حصة الذكر:</span><span>${item.subM.toLocaleString()}</span></div>`;
         if (item.subF) html += `<div class="res-line" style="font-size:12px;"><span>- حصة الأنثى:</span><span>${item.subF.toLocaleString()}</span></div>`;
     });
+    
     document.getElementById('result').innerHTML = html;
     document.getElementById('result').style.display = 'block';
 }
