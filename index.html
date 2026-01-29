@@ -2,141 +2,44 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>محاكي الميراث القرآني المتكامل</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاكي الميراث القرآني</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; text-align: center; }
-        .container { max-width: 700px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; margin-bottom: 10px; }
-        .note { font-size: 0.9em; color: #e67e22; margin-bottom: 20px; font-weight: bold; }
-        .input-group { margin: 15px 0; text-align: right; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button { background-color: #27ae60; color: white; border: none; padding: 15px; border-radius: 5px; cursor: pointer; font-size: 18px; width: 100%; margin-top: 20px; }
-        #result { margin-top: 25px; padding: 20px; border-radius: 8px; display: none; text-align: right; line-height: 1.8; background-color: #e8f5e9; border: 1px solid #c8e6c9; }
-        .item { border-bottom: 1px dashed #abd1b5; padding: 5px 0; }
+        :root { --primary: #27ae60; --dark: #2c3e50; --light: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--light); padding: 10px; text-align: center; }
+        .container { max-width: 600px; margin: 20px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        h1 { color: var(--dark); margin-bottom: 5px; font-size: 24px; }
+        .logic-note { color: #e67e22; font-size: 14px; font-weight: bold; margin-bottom: 20px; border: 1px dashed #e67e22; padding: 5px; display: inline-block; }
+        .input-group { margin: 15px 0; text-align: right; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #444; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .flex-group { display: flex; gap: 10px; }
+        button { background-color: var(--primary); color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 18px; width: 100%; margin-top: 20px; transition: 0.3s; }
+        button:hover { background-color: #219150; }
+        #result { margin-top: 25px; padding: 20px; border-radius: 10px; display: none; text-align: right; background-color: #e8f5e9; border: 1px solid #c8e6c9; }
+        .res-item { display: flex; justify-content: space-between; border-bottom: 1px solid #d1e7d3; padding: 8px 0; }
+        .res-name { font-weight: bold; }
+        .res-val { color: #2e7d32; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>محاكي الميراث القرآني</h1>
-    <p class="note">القاعدة المتبعة: "الولد" تشمل الذكر والأنثى في حجب النقصان</p>
+    <div class="logic-note">ملاحظة: "ولد" تشمل الذكر والأنثى في حجب النقصان</div>
     
     <div class="input-group">
         <label>إجمالي مبلغ التركة:</label>
-        <input type="number" id="estate" placeholder="أدخل المبلغ هنا">
+        <input type="number" id="estate" placeholder="أدخل المبلغ">
     </div>
 
-    <div class="input-group">
-        <label>هل يوجد "ولد" (ابن أو بنت)؟</label>
-        <select id="hasChildren">
-            <option value="yes">نعم (يوجد فرع وارث)</option>
-            <option value="no" selected>لا (لا يوجد فرع وارث)</option>
-        </select>
+    <div class="flex-group">
+        <div class="input-group" style="flex:1">
+            <label>عدد الذكور (أبناء):</label>
+            <input type="number" id="sons" value="0" min="0">
+        </div>
+        <div class="input-group" style="flex:1">
+            <label>عدد الإناث (بنات):</label>
+            <input type="number" id="daughters" value="0" min="0">
+        </div>
     </div>
-
-    <div class="input-group">
-        <label>الحالة الاجتماعية للمتوفى:</label>
-        <select id="spouseType">
-            <option value="none">أعزب/أرمل</option>
-            <option value="husband">متوفى وترك (زوجة)</option>
-            <option value="wife">متوفاة وتركت (زوج)</option>
-        </select>
-    </div>
-
-    <div class="input-group">
-        <label>الأبوان:</label>
-        <select id="parents">
-            <option value="both">الأب والأم على قيد الحياة</option>
-            <option value="father">الأب فقط</option>
-            <option value="mother">الأم فقط</option>
-            <option value="none">كلاهما متوفى</option>
-        </select>
-    </div>
-
-    <div class="input-group">
-        <label>هل يوجد إخوة (اثنان فأكثر)؟</label>
-        <select id="siblings">
-            <option value="yes">نعم (جمع من الإخوة)</option>
-            <option value="no" selected>لا (أو أخ واحد فقط)</option>
-        </select>
-    </div>
-
-    <button onclick="calculate()">احسب الميراث التفصيلي</button>
-
-    <div id="result"></div>
-</div>
-
-<script>
-    function calculate() {
-        const estate = parseFloat(document.getElementById('estate').value);
-        const hasChildren = document.getElementById('hasChildren').value === 'yes';
-        const spouse = document.getElementById('spouseType').value;
-        const parents = document.getElementById('parents').value;
-        const hasSiblings = document.getElementById('siblings').value === 'yes';
-        
-        if (isNaN(estate) || estate <= 0) { alert("يرجى إدخال مبلغ التركة"); return; }
-
-        let shares = [];
-        let totalDistributed = 0;
-
-        // 1. نصيب الزوج أو الزوجة
-        if (spouse === 'husband') {
-            let s = hasChildren ? estate * (1/8) : estate * (1/4);
-            shares.push({ name: "الزوجة", amount: s, text: hasChildren ? "1/8 (لوجود ولد)" : "1/4 (لعدم وجود ولد)" });
-            totalDistributed += s;
-        } else if (spouse === 'wife') {
-            let s = hasChildren ? estate * (1/4) : estate * (1/2);
-            shares.push({ name: "الزوج", amount: s, text: hasChildren ? "1/4 (لوجود ولد)" : "1/2 (لعدم وجود ولد)" });
-            totalDistributed += s;
-        }
-
-        // 2. نصيب الأب
-        if (parents === 'both' || parents === 'father') {
-            let s = hasChildren ? estate * (1/6) : 0; 
-            if (hasChildren) {
-                shares.push({ name: "الأب", amount: s, text: "1/6 (لوجود ولد)" });
-                totalDistributed += s;
-            } else {
-                // الأب يرث بالتعصيب في حال عدم وجود ولد (سيظهر في الباقي)
-            }
-        }
-
-        // 3. نصيب الأم
-        if (parents === 'both' || parents === 'mother') {
-            let s = 0;
-            let note = "";
-            if (hasChildren) {
-                s = estate * (1/6);
-                note = "1/6 (لوجود ولد)";
-            } else if (hasSiblings) {
-                s = estate * (1/6);
-                note = "1/6 (لوجود جمع من الإخوة)";
-            } else {
-                s = estate * (1/3);
-                note = "1/3 (لعدم وجود ولد أو جمع إخوة)";
-            }
-            shares.push({ name: "الأم", amount: s, text: note });
-            totalDistributed += s;
-        }
-
-        // عرض النتائج
-        let html = "<h3>تفاصيل توزيع التركة:</h3>";
-        shares.forEach(item => {
-            html += `<div class="item"><b>${item.name}:</b> ${item.amount.toLocaleString()} (نصيبه: ${item.text})</div>`;
-        });
-
-        let remainder = estate - totalDistributed;
-        if (remainder > 0) {
-            let heir = hasChildren ? "الأولاد (للذكر مثل حظ الأنثيين)" : (parents === 'both' || parents === 'father' ? "الأب (تعصيباً)" : "باقي الورثة/الإخوة");
-            html += `<div class="item" style="color:#2c3e50"><b>المتبقي لـ ${heir}:</b> ${remainder.toLocaleString()}</div>`;
-        }
-
-        const resultDiv = document.getElementById('result');
-        resultDiv.innerHTML = html;
-        resultDiv.style.display = 'block';
-    }
-</script>
-
-</body>
-</html>
