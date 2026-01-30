@@ -2,106 +2,132 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>محاكي مدرسة الدوامة - الإصدار المرجعي القرآني</title>
+    <title>تقرير توزيع التركة - مدرسة الدوامة</title>
     <style>
-        :root { --p: #004d40; --g: #c09b52; --bg: #f8faf9; }
+        :root { --p: #004d40; --g: #c09b52; --bg: #f4f7f6; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; text-align: right; }
-        .vortex-container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border-top: 10px solid var(--p); }
-        .logic-header { background: #e0f2f1; padding: 15px; border-radius: 12px; font-size: 14px; margin-bottom: 25px; border-right: 5px solid var(--g); line-height: 1.8; }
-        .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .vortex-card { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border-top: 10px solid var(--p); }
+        .no-print { margin-bottom: 25px; }
+        .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
         label { font-weight: bold; color: var(--p); display: block; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; }
-        button { width: 100%; background: var(--p); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 20px; cursor: pointer; font-weight: bold; }
-        #result { margin-top: 30px; display: none; }
-        .res-table { width: 100%; border-collapse: collapse; }
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ccc; font-size: 15px; }
+        button { width: 100%; background: var(--p); color: white; padding: 15px; border: none; border-radius: 12px; font-size: 18px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        #resultArea { margin-top: 30px; display: none; border-top: 2px solid #eee; padding-top: 20px; }
+        .share-meter { background: #e0f2f1; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; border: 2px solid var(--p); }
+        .res-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .res-table th { background: var(--p); color: white; padding: 12px; }
         .res-table td { padding: 12px; border: 1px solid #eee; text-align: center; }
         .highlight { color: #2e7d32; font-weight: bold; font-size: 1.2em; }
-        .badge { background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 11px; color: #555; }
+        .print-btn { background: var(--g); margin-top: 20px; }
+        @media print { .no-print { display: none; } .vortex-card { border: none; box-shadow: none; } }
     </style>
 </head>
 <body>
 
-<div class="vortex-container">
-    <h2>محاكي مدرسة الدوامة (الفرائض القرآنية فقط)</h2>
-    <div class="logic-header">
-        <b>نظام الدقة المطلقة:</b><br>
-        1. <b>الزوجة:</b> من أصل التركة (آية 12).<br>
-        2. <b>الوالدان:</b> من المتبقي (آية 11).<br>
-        3. <b>الولد/الكلالة:</b> امتصاص قاع الدوامة بالأسهم (2:1) لضمان عدم وجود عول أو ضياع سنتيم واحد.
+<div class="vortex-card">
+    <div class="no-print">
+        <h2>محاكي مدرسة الدوامة - الإصدار الشامل</h2>
+        <div class="input-grid">
+            <div style="grid-column: 1/-1;"><label>إجمالي التركة (MAD):</label><input type="number" id="estate" value="1000"></div>
+            <div><label>الزوجية:</label><select id="spouse"><option value="none">أعزب/عزباء</option><option value="wife">رجل ترك زوجة</option><option value="husband">امرأة تركت زوجاً</option></select></div>
+            <div><label>الأب:</label><select id="hasF"><option value="0">متوفى</option><option value="1">حي</option></select></div>
+            <div><label>الأم:</label><select id="hasM"><option value="0">متوفاة</option><option value="1">حية</option></select></div>
+            <div><label>ذكور (ولد):</label><input type="number" id="mC" value="0"></div>
+            <div><label>إناث (ولد):</label><input type="number" id="fC" value="0"></div>
+            <div><label>إخوة (ذكور):</label><input type="number" id="mS" value="0"></div>
+            <div><label>إخوة (إناث):</label><input type="number" id="fS" value="0"></div>
+        </div>
+        <button onclick="calculateVortex()">تحليل التركة وتشغيل الميزان</button>
     </div>
 
-    <div class="input-grid">
-        <div style="grid-column: 1/-1;"><label>مبلغ التركة الكلي:</label><input type="number" id="estate" value="1000"></div>
-        <div><label>الزوجية:</label><select id="spouse"><option value="none">لا يوجد</option><option value="wife">زوجة</option><option value="husband">زوج</option></select></div>
-        <div><label>الأب:</label><select id="hasF"><option value="0">متوفى</option><option value="1">حي</option></select></div>
-        <div><label>الأم:</label><select id="hasM"><option value="0">متوفاة</option><option value="1">حية</option></select></div>
-        <div><label>الأبناء (ذكور):</label><input type="number" id="mC" value="1"></div>
-        <div><label>الأبناء (إناث):</label><input type="number" id="fC" value="1"></div>
-    </div>
-
-    <button onclick="runVortexPure()">تشغيل الدوامة القرآنية</button>
-
-    <div id="result">
+    <div id="resultArea">
+        <center><h3>تقرير توزيع التركة الشرعي</h3></center>
+        <div class="share-meter" id="shareMeter"></div>
         <table class="res-table">
             <thead>
-                <tr><th>الوارث</th><th>المنطق القرآني</th><th>المبلغ المستحق</th></tr>
+                <tr><th>الوارث</th><th>المنطق (مدرسة الدوامة)</th><th>المبلغ المستحق</th></tr>
             </thead>
             <tbody id="resBody"></tbody>
         </table>
+        <button class="no-print print-btn" onclick="window.print()">طباعة التقرير أو حفظه كـ PDF</button>
     </div>
 </div>
 
 <script>
-function runVortexPure() {
+function calculateVortex() {
     const estate = parseFloat(document.getElementById('estate').value);
     const mC = parseInt(document.getElementById('mC').value) || 0;
     const fC = parseInt(document.getElementById('fC').value) || 0;
-    const nC = mC + fC;
+    const nC = mC + fC; 
     const sp = document.getElementById('spouse').value;
     const hasF = document.getElementById('hasF').value === "1";
     const hasM = document.getElementById('hasM').value === "1";
+    const mS = parseInt(document.getElementById('mS').value) || 0;
+    const fS = parseInt(document.getElementById('fS').value) || 0;
+    const nS = mS + fS;
 
     let balance = estate;
     let table = "";
-
-    // المرحلة 1: الزوجية من الأصل
+    
+    // 1. الزوجية (مرحلة 1: من الأصل)
     let sRate = 0;
     if (sp === 'wife') sRate = (nC > 0) ? 1/8 : 1/4;
     else if (sp === 'husband') sRate = (nC > 0) ? 1/4 : 1/2;
-    
-    let sAmount = estate * sRate;
-    if (sAmount > 0) {
-        table += `<tr><td>الزوج/ة</td><td><span class="badge">آية 12</span> ${(sRate*100).toFixed(1)}% من الأصل</td><td class="highlight">${sAmount.toFixed(2)}</td></tr>`;
+    if (sRate > 0) {
+        let sAmount = estate * sRate;
+        table += `<tr><td>الزوج/ة</td><td>آية 12 (من الأصل)</td><td class="highlight">${sAmount.toFixed(2)}</td></tr>`;
         balance -= sAmount;
     }
 
-    // المرحلة 2: الوالدان من الباقي
-    if (hasM) {
-        let mRate = (nC > 0) ? 1/6 : 1/3;
-        let mA = balance * mRate;
-        table += `<tr><td>الأم</td><td><span class="badge">آية 11</span> ${(mRate*100).toFixed(1)}% من الباقي</td><td class="highlight">${mA.toFixed(2)}</td></tr>`;
-        balance -= mA;
-    }
-    if (hasF) {
-        let fA = balance * (1/6);
-        table += `<tr><td>الأب</td><td><span class="badge">آية 11</span> 16.7% من الباقي</td><td class="highlight">${fA.toFixed(2)}</td></tr>`;
-        balance -= fA;
+    // 2. الوالدان (مرحلة 2: من الباقي)
+    const isKhalala = !hasF && !hasM && nC === 0;
+    if (!isKhalala) {
+        if (hasM) {
+            let mRate = (nC > 0 || nS >= 2) ? 1/6 : 1/3;
+            let mA = balance * mRate;
+            table += `<tr><td>الأم</td><td>آية 11 (من الباقي)</td><td class="highlight">${mA.toFixed(2)}</td></tr>`;
+            balance -= mA;
+        }
+        if (hasF) {
+            let fA = balance * (1/6);
+            table += `<tr><td>الأب</td><td>آية 11 (من الباقي)</td><td class="highlight">${fA.toFixed(2)}</td></tr>`;
+            balance -= fA;
+        }
     }
 
-    // المرحلة 3: الأولاد (نظام الأسهم لامتصاص القاع)
+    // 3. قاع الدوامة (الولد أو الكلالة)
     if (nC > 0) {
         let totalShares = (mC * 2) + fC;
         let shareVal = balance / totalShares;
-        if (mC > 0) table += `<tr><td>الابن (الواحد)</td><td><span class="badge">تفاضل</span> سهمين</td><td class="highlight">${(shareVal * 2).toFixed(2)}</td></tr>`;
-        if (fC > 0) table += `<tr><td>البنت (الواحدة)</td><td><span class="badge">تفاضل</span> سهم واحد</td><td class="highlight">${shareVal.toFixed(2)}</td></tr>`;
-    } else if (balance > 0 && sp !== 'none') {
-        // الرد للأقربون عند انعدام الولد
-        table += `<tr style="background:#fffde7"><td>رد للزوجة</td><td>الفائض (الأقربون)</td><td class="highlight">${balance.toFixed(2)}</td></tr>`;
+        document.getElementById('shareMeter').innerHTML = `<b>ميزان السهم (للولد):</b> المتبقي ${balance.toFixed(2)} ÷ ${totalShares} حظاً = <span class="highlight">${shareVal.toFixed(4)}</span>`;
+        if (mC > 0) table += `<tr><td>الابن (${mC})</td><td>سهمان لكل فرد</td><td class="highlight">${((shareVal*2)*mC).toFixed(2)}</td></tr>`;
+        if (fC > 0) table += `<tr><td>البنت (${fC})</td><td>سهم واحد لكل فرد</td><td class="highlight">${(shareVal*fC).toFixed(2)}</td></tr>`;
+        balance = 0;
+    } 
+    else if (isKhalala && nS > 0) {
+        if (sp !== 'none') { // حالة "رجل" آية 12
+            let sibRate = (nS === 1) ? 1/6 : 1/3;
+            let sibAmount = balance * sibRate;
+            document.getElementById('shareMeter').innerHTML = `<b>منطق الكلالة (رجل):</b> شركاء في الثلث/السدس من المتبقي.`;
+            table += `<tr><td>الإخوة (${nS})</td><td>آية 12 (شركاء)</td><td class="highlight">${sibAmount.toFixed(2)}</td></tr>`;
+            balance -= sibAmount;
+        } else { // حالة "امرؤ" آية 176
+            let totalSibShares = (mS * 2) + fS;
+            let sVal = balance / totalSibShares;
+            document.getElementById('shareMeter').innerHTML = `<b>ميزان السهم (إخوة كلالة):</b> المتبقي ${balance.toFixed(2)} ÷ ${totalSibShares} حظاً.`;
+            if (mS > 0) table += `<tr><td>الأخ (${mS})</td><td>سهمان (آية 176)</td><td class="highlight">${((sVal*2)*mS).toFixed(2)}</td></tr>`;
+            if (fS > 0) table += `<tr><td>الأخت (${fS})</td><td>سهم واحد (آية 176)</td><td class="highlight">${(sVal*fS).toFixed(2)}</td></tr>`;
+            balance = 0;
+        }
+    }
+
+    // الرد النهائي
+    if (balance > 0 && sp !== 'none') {
+        table += `<tr style="background:#fffde7"><td>رد للزوجة</td><td>فائض الأقربون</td><td class="highlight">${balance.toFixed(2)}</td></tr>`;
     }
 
     document.getElementById('resBody').innerHTML = table;
-    document.getElementById('result').style.display = 'block';
+    document.getElementById('resultArea').style.display = 'block';
 }
 </script>
 </body>
