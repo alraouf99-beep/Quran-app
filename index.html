@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكي الميراث القرآني - نسخة الكلالة المحدثة</title>
+    <title>محاكي مدرسة الدوامة - نظام التدفق التتابعي</title>
     <style>
         :root { --p: #004d40; --g: #c09b52; --bg: #f8faf9; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 15px; text-align: center; }
-        .vortex-container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 8px solid var(--p); }
-        .logic-box { background: #e0f2f1; padding: 10px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; text-align: right; line-height: 1.6; border-right: 5px solid var(--g); }
+        .vortex-container { max-width: 650px; margin: auto; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 8px solid var(--p); }
+        .logic-box { background: #e0f2f1; padding: 12px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; text-align: right; line-height: 1.6; border-right: 5px solid var(--g); }
         .input-group { text-align: right; margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--p); }
         input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
@@ -16,42 +16,38 @@
         button { width: 100%; background: var(--p); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         button:hover { background: #00695c; }
         #result { margin-top: 25px; padding: 20px; border: 2px solid var(--g); border-radius: 15px; display: none; background: #fff; text-align: right; }
-        .res-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
-        .val { font-weight: bold; color: #2e7d32; }
-        .status-msg { font-size: 12px; color: #666; font-style: italic; margin-top: 5px; }
+        .res-line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .val { font-weight: bold; color: #2e7d32; font-size: 1.1em; }
+        .flow-info { font-size: 12px; color: #555; background: #fff8e1; padding: 8px; border-radius: 5px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="vortex-container">
-    <h2>محاكي الميراث القرآني 2026</h2>
+    <h2>محاكي مدرسة الدوامة الحسابي</h2>
     <div class="logic-box">
-        • <b>الكليل:</b> من لا أب له ولا أم ولا ولد (الزوجة لا تمنع الكلالة).<br>
-        • <b>الولد:</b> يشمل الذكر والأنثى (قاعدة عامة).<br>
-        • <b>الرد:</b> الزوجة من الأقربون (يُرد عليها الفائض).
+        • <b>التدفق:</b> تبدأ الدوامة بالزوجة، ثم الوالدين (أولوية الوصية)، ثم الولد/الإخوة.<br>
+        • <b>الكتلة المتناقصة:</b> كل طرف يأخذ نسبته من "المتبقي" مما قبله.<br>
+        • <b>الكلالة:</b> غياب الأب والأم والولد (الذكر والأنثى).
     </div>
 
     <div class="input-group">
         <label>إجمالي مبلغ التركة (MAD):</label>
-        <input type="number" id="estate" placeholder="أدخل المبلغ">
+        <input type="number" id="estate" placeholder="أدخل المبلغ" value="1000">
     </div>
 
     <div class="input-group">
-        <label>الجنس والطرف الآخر:</label>
+        <label>الطرف الآخر (الزوجية):</label>
         <select id="spouseExist">
             <option value="none">أعزب / عزباء</option>
-            <option value="wife">رجل ترك زوجة</option>
-            <option value="husband">امرأة تركت زوجاً</option>
+            <option value="wife">زوجة</option>
+            <option value="husband">زوج</option>
         </select>
     </div>
 
     <div class="input-group">
-        <label>الأبناء (الولد):</label>
-        <div class="flex">
-            <input type="number" id="sons" placeholder="عدد الذكور" value="0" min="0">
-            <input type="number" id="daughters" placeholder="عدد الإناث" value="0" min="0">
-        </div>
-        <div class="status-msg">* وجود ولد ينفي صفة الكلالة.</div>
+        <label>عدد الأبناء (الولد):</label>
+        <input type="number" id="totalChildren" value="0" min="0">
     </div>
 
     <div class="input-group">
@@ -60,94 +56,102 @@
             <select id="father"><option value="0">الأب متوفى</option><option value="1">الأب حي</option></select>
             <select id="mother"><option value="0">الأم متوفاة</option><option value="1">الأم حية</option></select>
         </div>
-        <div class="status-msg">* الكلالة تشترط عدم وجود الأم والأب.</div>
     </div>
 
     <div class="input-group">
-        <label>الإخوة والأخوات (للعمل به في حالة الكلالة):</label>
-        <div class="flex">
-            <input type="number" id="mSib" placeholder="ذكور" value="0">
-            <input type="number" id="fSib" placeholder="إناث" value="0">
-        </div>
+        <label>عدد الإخوة (للكلالة):</label>
+        <input type="number" id="totalSiblings" value="0" min="0">
     </div>
 
-    <button onclick="runVortex()">احسب الميراث الآن</button>
+    <button onclick="runVortexFlow()">تشغيل الدوامة الحسابية</button>
+    
     <div id="result"></div>
 </div>
 
 <script>
-function runVortex() {
+function runVortexFlow() {
     const estate = parseFloat(document.getElementById('estate').value);
     if (!estate) return alert("يرجى إدخال مبلغ التركة");
 
     const sp = document.getElementById('spouseExist').value;
-    const nS = parseInt(document.getElementById('sons').value) || 0;
-    const nD = parseInt(document.getElementById('daughters').value) || 0;
-    const hasW = (nS + nD) > 0; // الولد يشمل الجنسين
+    const nC = parseInt(document.getElementById('totalChildren').value) || 0;
     const hasF = document.getElementById('father').value === "1";
     const hasM = document.getElementById('mother').value === "1";
-    const mS = parseInt(document.getElementById('mSib').value) || 0;
-    const fS = parseInt(document.getElementById('fSib').value) || 0;
+    const nS = parseInt(document.getElementById('totalSiblings').value) || 0;
 
-    // تحديد حالة الكلالة (الكليل): لا أب ولا أم ولا ولد
-    // ملاحظة: الزوجة/الزوج لا يدخلون في هذا الشرط
-    const isKhalala = !hasF && !hasM && !hasW;
+    let currentBalance = estate;
+    let finalShares = {};
+    let steps = "";
 
-    let rates = { spouse: 0, mother: 0, father: 0, children: 0, siblings: 0 };
+    // 1. المرحلة الأولى: الزوجة/الزوج (آية 12) من أصل التركة
+    let sRate = 0;
+    if (sp === 'wife') sRate = (nC > 0) ? 1/8 : 1/4;
+    else if (sp === 'husband') sRate = (nC > 0) ? 1/4 : 1/2;
 
-    // 1. نصيب الزوج/الزوجة
-    if (sp === 'wife') rates.spouse = hasW ? 1/8 : 1/4;
-    else if (sp === 'husband') rates.spouse = hasW ? 1/4 : 1/2;
-
-    // 2. توزيع الميراث العادي (إذا لم يكن كليلاً)
-    if (!isKhalala) {
-        if (hasM) rates.mother = hasW ? 1/6 : 1/3;
-        if (hasF) rates.father = 1/6; // كفرض أساسي
-        if (hasW) rates.children = (nS + nD > 1) ? 2/3 : 1/2;
-    } 
-    // 3. توزيع الكلالة (الكليل)
-    else {
-        // إذا كان المتوفى متزوجاً (رجل - آية 12)
-        if (sp !== 'none') {
-            rates.siblings = (mS + fS === 1) ? 1/6 : (mS + fS > 1 ? 1/3 : 0);
-        } else { 
-            // إذا كان "امرؤ" (عزب - آية 176)
-            if (mS === 0 && fS === 1) rates.siblings = 1/2;
-            else if (mS === 0 && fS >= 2) rates.siblings = 2/3;
-            else if (mS > 0) rates.siblings = 0.75; // تعصيب (للذكر مثل حظ الأنثيين)
-        }
+    if (sRate > 0) {
+        finalShares.spouse = estate * sRate;
+        currentBalance -= finalShares.spouse;
+        steps += `• تم استقطاع نصيب الزوجية من الأصل.<br>`;
     }
 
-    // 4. حساب المبالغ الأولية
-    let shares = {};
-    for (let key in rates) { shares[key] = estate * rates[key]; }
-
-    // 5. منطق الرد (قاعدة: الزوجة من الأقربون)
-    let totalAssigned = Object.values(shares).reduce((a, b) => a + b, 0);
-    if (totalAssigned < estate) {
-        let surplus = estate - totalAssigned;
-        let totalRates = Object.values(rates).reduce((a, b) => a + b, 0);
-        
-        // توزيع الفائض بنسبة الفرض الأصلية على الجميع (بما فيهم الزوجة)
-        if (totalRates > 0) {
-            for (let key in shares) {
-                shares[key] += (rates[key] / totalRates) * surplus;
-            }
+    // 2. المرحلة الثانية: الوالدان (آية 11) من المتبقي (أولوية الوصية)
+    const isKhalala = !hasF && !hasM && nC === 0;
+    if (!isKhalala) {
+        if (hasM) {
+            let mRate = (nC > 0 || nS >= 2) ? 1/6 : 1/3;
+            finalShares.mother = currentBalance * mRate;
         }
+        if (hasF) {
+            let fRate = 1/6;
+            finalShares.father = currentBalance * fRate;
+        }
+        currentBalance -= (finalShares.mother || 0) + (finalShares.father || 0);
+        steps += `• تم توزيع نصيب الوالدين من المتبقي بعد الزوجة.<br>`;
+    }
+
+    // 3. المرحلة الثالثة: الولد أو الإخوة (قاع الدوامة)
+    if (nC > 0) {
+        finalShares.children = currentBalance; // الولد يأخذ كل ما استقر في القاع
+        steps += `• استقر باقي التركة عند الأولاد.<br>`;
+    } else if (isKhalala && nS > 0) {
+        // تطبيق آية 12 للكلالة: السدس للواحد والثلث للجمع من "المتبقي"
+        let sibRate = (nS === 1) ? 1/6 : 1/3;
+        let sibAmount = currentBalance * sibRate;
+        finalShares.siblings = sibAmount;
+        
+        // الفائض بعد الكلالة يُرد على الزوجة (الأقربون)
+        let surplus = currentBalance - sibAmount;
+        if (surplus > 0 && sp !== 'none') {
+            finalShares.spouse += surplus;
+            steps += `• تم رد فائض الكلالة على الزوجة.<br>`;
+        }
+    } else if (currentBalance > 0) {
+        // رد عام على الموجودين إذا لم يوجد ولد أو إخوة
+        if (sp !== 'none') finalShares.spouse = (finalShares.spouse || 0) + currentBalance;
+        else if (hasM) finalShares.mother += currentBalance;
+        steps += `• تم رد المتبقي بالكامل على الأقربون.<br>`;
     }
 
     // عرض النتائج
-    let html = `<h4>${isKhalala ? "⚠️ حالة كلالة (كليل)" : "📋 حالة وراثة اعتيادية"}</h4>`;
-    if (shares.spouse > 0) html += `<div class="res-line"><b>الزوج/ة (شامل الرد):</b> <span class="val">${shares.spouse.toLocaleString()}</span></div>`;
-    if (hasM) html += `<div class="res-line"><b>الأم:</b> <span class="val">${shares.mother.toLocaleString()}</span></div>`;
-    if (hasF) html += `<div class="res-line"><b>الأب:</b> <span class="val">${shares.father.toLocaleString()}</span></div>`;
-    if (hasW) html += `<div class="res-line"><b>الأولاد (${nS+nD}):</b> <span class="val">${shares.children.toLocaleString()}</span></div>`;
-    if (shares.siblings > 0) html += `<div class="res-line"><b>الإخوة:</b> <span class="val">${shares.siblings.toLocaleString()}</span></div>`;
+    let html = `<h4>${isKhalala ? "⚠️ حالة كلالة" : "📋 حالة تدفق اعتيادية"}</h4>`;
+    html += `<div class="flow-info">${steps}</div>`;
+    
+    if (finalShares.spouse) html += line("الزوج/ة (شامل الرد)", finalShares.spouse);
+    if (hasM) html += line("الأم", finalShares.mother);
+    if (hasF) html += line("الأب", finalShares.father);
+    if (finalShares.children) html += line("الأولاد", finalShares.children);
+    if (finalShares.siblings) html += line("الإخوة", finalShares.siblings);
 
     document.getElementById('result').innerHTML = html;
     document.getElementById('result').style.display = 'block';
+}
+
+function line(label, val) {
+    return `<div class="res-line"><span>${label}:</span> <span class="val">${val.toLocaleString(undefined, {maximumFractionDigits: 2})} MAD</span></div>`;
 }
 </script>
 
 </body>
 </html>
+
+
